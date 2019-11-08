@@ -1,0 +1,22 @@
+
+
+jar{
+    enabled = true
+}
+
+configurations {
+
+    implementation {
+        exclude group: 'org.projectlombok', module: '*'
+        exclude group: 'cn.kanyun', module: '*'
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-bus-kafka'
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-stream-kafka'
+
+    }
+
+}
+
+dependencies {
+//    consul服务发现组件 代替 Eureka
+    implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
+}

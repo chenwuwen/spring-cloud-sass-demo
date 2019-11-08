@@ -1,0 +1,24 @@
+//pluginManagement{}块只能出现在settings.gradle文件中,且必须是第一个块
+pluginManagement {
+    plugins {
+        id 'org.springframework.boot' version "${springbootVersion}"
+        id 'io.spring.dependency-management' version "${dependencyManagementVersion}"
+    }
+}
+rootProject.name = 'spring-cloud-sass-demo'
+
+include 'spring-cloud-consul'
+include 'spring-cloud-gateway'
+include 'spring-cloud-config-bus-server'
+include 'spring-cloud-config-client'
+include 'spring-cloud-provider-user'
+include 'spring-cloud-provider-biz'
+//jar依赖
+include 'spring-cloud-domain'
+//jar依赖
+include 'spring-cloud-common'
+//基础服务RPC
+include 'spring-cloud-provider-base'
+//springboot admin监控
+include 'spring-cloud-admin'
+

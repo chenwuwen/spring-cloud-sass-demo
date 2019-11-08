@@ -1,0 +1,2 @@
+INSERT INTO TENANT (TENANT_NAME,SIMPLICITY,DOMAIN,DB_URL,DB_USER,DB_PASS,REGISTER_DATE) VALUES ('苏宁','suning','suning.kanyun.cn','jdbc:mysql://localhost:3306/','root','root',CURRENT_TIMESTAMP);
+INSERT INTO TENANT (TENANT_NAME,SIMPLICITY,DOMAIN,DB_URL,DB_USER,DB_PASS,REGISTER_DATE) VALUES ('物美','wumei','wumei.kanyun.cn','jdbc:mysql://localhost:3306/','root','root',CURRENT_TIMESTAMP);

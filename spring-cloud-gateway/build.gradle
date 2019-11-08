@@ -1,0 +1,31 @@
+configurations {
+    implementation {
+//        gateway由于依赖了webflux而webflux底层依赖了netty,因此与tomcat有冲突,而spring-boot-starter-web包含了tomcat
+//        gateway与SpringMvc有冲突,排除掉(因为在父build.gradle定义了所有子项目都依赖spring-boot-starter-web)
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
+//        gateway与config相关包冲突
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-config-server'
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-bus'
+        exclude group: 'cn.kanyun', module: '*'
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-bus-kafka'
+    }
+}
+
+//bootJar{
+//    enabled = true
+//}
+
+jar{
+    enabled = true
+}
+
+
+dependencies {
+//    网关组件gateway 代替zuul
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+//    gateway的Filter需要javax.servlet.Filter，这里不能使用providedCompile方法,此方法是war包中包括的,也就是需要 apply plugin: 'war'
+    implementation 'javax.servlet:javax.servlet-api:4.0.1'
+
+
+
+}

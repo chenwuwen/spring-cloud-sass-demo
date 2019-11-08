@@ -1,0 +1,21 @@
+configurations {
+
+    implementation {
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-bus-kafka'
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-stream-kafka'
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-config'
+        exclude group: 'org.projectlombok', module: '*'
+        exclude group: 'cn.kanyun', module: '*'
+        exclude group: 'mysql', module: '*'
+        exclude group: 'com.baomidou', module: '*'
+        exclude group: 'io.github', module: '*'
+
+    }
+
+}
+dependencies {
+//    这里添加了jdbc的依赖是因为springboot admin 需要使用数据库,虽然使用上面的MybatisPlus,但是想到又不用自己写SQL,直接依赖jdbc既简单又方便
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+//    springboot admin 发邮件依赖
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+}

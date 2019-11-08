@@ -1,0 +1,33 @@
+server:
+  port: 8070
+spring:
+  application:
+    name: config-bus-client
+
+  cloud:
+    consul:
+      host: 127.0.0.1
+      port: 8500
+#     开启config服务发现，既开启集群环境，此开关开启时，client必须使用服务名链接config server
+      discovery:
+        enabled: true #启用服务发现
+        register: true #启用服务注册
+        deregister: true #服务停止时取消注册
+        prefer-ip-address: true #表示注册时使用IP而不是HostName
+        health-check-interval: 10s  #健康检查频率
+        health-check-critical-timeout: 30s
+
+
+
+
+# 利用spring-boot-starter-actuator实现配置半自动刷新【需要注意的是,这个是SpringCloudConfig的配置中心而非bus消息总线】
+# 如果spring-cloud-config-client启动了多个实例[端口不一样],那么当配置改动并上传到github上时,需要发送多次
+# WebHook才能将所有实例的配置进行更新,而采用bus消息总线的话,只要这几个服务的实例在消息总线中,那么webhook只需要发送一次更新就可以了
+# 消息总线会同步到其他实例中去
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh
+
+

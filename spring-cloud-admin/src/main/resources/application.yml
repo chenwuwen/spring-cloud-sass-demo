@@ -1,0 +1,72 @@
+server:
+  port: 1001
+
+spring:
+  application:
+    name: spring-cloud-admin
+
+  cloud:
+    consul:
+      host: 127.0.0.1
+      port: 8500
+
+      enabled: true
+#      开启config服务发现，既开启集群环境，此开关开启时，client必须使用服务名链接config server
+      discovery:
+        enabled: true #启用服务发现
+        register: true #启用服务注册
+        deregister: true #服务停止时取消注册
+        prefer-ip-address: true #表示注册时使用IP而不是HostName
+        health-check-interval: 10s  #健康检查频率
+        health-check-critical-timeout: 30s
+#        tags:
+#          - management.context-path=/foo
+#          - health.path=/ping
+
+#springboot 邮件配置
+  mail:
+    host: smtp.qq.com
+    username: 949955482@qq.com
+    password: vhfsytgpuxcdbgba
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+#  springboot-admin 发邮件配置
+  boot:
+    admin:
+      discovery:
+#        忽略consul发现,也就是springboot-admin不去监控consul,因为监控consul会提示consul不在线,那是因为consul不是springboot应用,没有 /actuator/health URI
+        ignored-services: consul
+#      提醒设置
+      notify:
+        mail:
+#          是否启用发邮件配置
+          enabled: false
+#          是谁发送出去的
+          from: 949955482@qq.com
+#          发送给谁
+          to: 2504954849@qq.com
+
+
+#Spring Boot2.x中(也即：spring-boot-starter-actuator)，默认只开放了info、health两个端点，开放其他端点需要配置
+management:
+  endpoints:
+    web:
+      exposure:
+        #        开启所有端点:
+        include: "*"
+    #    启用所有端口
+    enabled-by-default: true
+  endpoint:
+    shutdown:
+      #      打开 shutdown 端点，通过 POST 访问该端点可以关闭应用
+      enabled: true
+    health:
+      #      显示详细的 health 信息
+      show-details: always
+

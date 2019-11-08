@@ -1,0 +1,25 @@
+
+configurations {
+
+    implementation {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
+
+        exclude group: 'org.projectlombok', module: '*'
+        exclude group: 'cn.kanyun', module: '*'
+        exclude group: 'com.h2database', module: '*'
+        exclude group: 'mysql', module: '*'
+        exclude group: 'de.codecentric', module: '*'
+
+    }
+
+    
+}
+
+
+
+
+dependencies {
+    implementation 'javax.servlet:javax.servlet-api:4.0.1'
+}

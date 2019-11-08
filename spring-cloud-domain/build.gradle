@@ -1,0 +1,25 @@
+configurations {
+
+    implementation {
+//        由于这个模块是POJO,因此排除所有依赖,视情况而定,由于该模块依赖了lombok，mybatisplus 因此需要保留该依赖
+//        exclude group: '*', module: '*'
+        exclude group: 'org.springframework.boot', module: '*'
+        exclude group: 'org.springframework.cloud', module: '*'
+        exclude group: 'cn.kanyun', module: '*'
+        exclude group: 'com.google.guava', module: '*'
+        exclude group: 'mysql', module: '*'
+        exclude group: 'com.h2database', module: '*'
+        exclude group: 'io.github.openfeign', module: '*'
+        exclude group: 'de.codecentric', module: '*'
+    }
+
+
+}
+
+dependencies {
+
+//    compileOnly 'org.projectlombok:lombok'
+//    annotationProcessor 'org.projectlombok:lombok'
+//    implementation 'cn.kanyun:dynamic-datasource-spring-boot-starter:1.0-SNAPSHOT'
+
+}

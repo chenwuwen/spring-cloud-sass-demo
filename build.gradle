@@ -1,0 +1,197 @@
+//父项目的plugin配置
+plugins {
+    id "idea"
+    id "org.springframework.boot" version "2.1.8.RELEASE" apply false
+}
+
+
+//引入version.gradle文件
+apply from: 'version.gradle'
+
+ext {
+    set('springCloudVersion', "Greenwich.SR3")
+    set('springCloudAliVersion', "0.9.0.RELEASE")
+    set('springBootVersion', "2.1.8.RELEASE")
+}
+
+
+//allprojects是对所有project的配置，包括Root Project。
+//而subprojects是对所有Child Project的配置
+
+allprojects {
+
+//    gradle构建插件依赖仓库
+    buildscript {
+        repositories {
+            mavenLocal()
+            mavenCentral()
+            jcenter()
+            maven { url "https://plugins.gradle.org/m2/" }
+            maven { url "https://repository.sonatype.org/content/groups/forge/" }
+            maven { url "http://repository.jboss.org/nexus/content/groups/public/" }
+            maven { url "http://maven.springframework.org/release/" }
+            maven { url 'https://repo.spring.io/libs-milestone' }
+        }
+        dependencies {
+//            classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.1.8.RELEASE'
+        }
+    }
+
+//    在allprojects块中不能使用 plugins{} 块
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+    apply plugin: 'idea'
+
+
+//    项目依赖仓库
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://repository.sonatype.org/content/groups/forge/" }
+        maven { url "http://repository.jboss.org/nexus/content/groups/public/" }
+        maven { url "http://maven.springframework.org/release/" }
+        maven { url 'https://repo.spring.io/libs-milestone' }
+    }
+
+    group = 'cn.kanyun'
+    version = '0.0.1-SNAPSHOT'
+
+//    sourceCompatibility = 1.8
+//    targetCompatibility = 1.8
+
+
+//    java编译的时候缺省状态下会因为中文字符而失败
+//    [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+}
+
+// 所有子模块的通用配置
+subprojects {
+
+//    这些子模块不应用 springboot插件
+    if (!name.endsWith("common") && !name.endsWith("domain")) {
+        apply plugin: 'org.springframework.boot'
+        apply plugin: 'io.spring.dependency-management'
+    }
+
+//    这里一定得要。在多模块下，不然编译失败，因为不会把依赖模块给打包。
+    jar {
+        enabled = true
+    }
+
+
+    dependencies {
+//        引入SpringCloud的BOM依赖,当再引入SpringCloud的具体依赖项时,不需要再写版本号
+        implementation platform("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}")
+//        spring-cloud-bus是spring-cloud-config-server的补充,避免了当修改配置中心的配置时,向每个微服务都发送refresh请求,使用了cloud-bus只需发送一次即可,这是一个消息队列的发布订阅模型
+//        冲突太多,不作为所有子模块的共同依赖,只在需要的模块引入依赖
+//        implementation 'org.springframework.cloud:spring-cloud-bus'
+//        SpringCloud Config server端
+//        冲突太多,不作为所有子模块的共同依赖,只在需要的模块引入依赖
+//        implementation 'org.springframework.cloud:spring-cloud-config-server'
+        implementation 'org.springframework.cloud:spring-cloud-starter-bus-kafka'
+        implementation 'org.springframework.cloud:spring-cloud-starter-stream-kafka'
+//        SpringCloud Config client端，需要动态更改配置的服务,都需要依赖它
+        implementation 'org.springframework.cloud:spring-cloud-starter-config'
+//        虽然不使用hystrix,但还是有些组件需要依赖它
+        implementation 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix'
+
+//        consul有两个功能，一个是consul作为注册中心，另一个是consul作为配置中心
+//        consul服务发现组件 代替 Eureka 主要作用是做注册中心
+        implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
+//        使用 consul 作为配置中心时,需要引入此依赖 主要作用 作为配置中心 这个依赖会与spring-cloud-starter-config依赖冲突
+//        implementation 'org.springframework.cloud:spring-cloud-starter-consul-config'
+//        网关组件gateway 代替zuul
+//        冲突太多,不作为所有子模块的共同依赖,只在需要的模块引入依赖
+//        implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+//        Feign是一个声明式的Web Service客户端,也是实际的远程服务调用者,Feign整合了Ribbon和Hystrix
+        implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+//        Feign 在默认情况下使用的是 JDK 原生的 URLConnection 发送HTTP请求，没有连接池，但是对每个地址会保持一个长连接，即利用 HTTP 的 persistence connection。我们可以用 Apache 的 HttpClient 替换 Feign 原始的 HTTP Client，通过设置连接池、超时时间等对服务之间的调用调优
+//        替换Feign的请求实现,还需要在配置文件中进行配置
+        implementation 'io.github.openfeign:feign-okhttp'
+//         分布式链路追踪sleuth,但是要想把追踪数据发送到Zipkin上，首先需要建立一个Zipkin Server应用程序(或者github下载源码编译打包)
+//        或者下载打包好的jar文件 https://dl.bintray.com/openzipkin/maven/io/zipkin/java/zipkin-server/
+//        关于 Zipkin 的服务端，在使用 Spring Boot 2.x 版本后，官方就不推荐自行定制编译了
+//        Sleuth只是用来产生的调用链监控信息，让我们可以得知微服务之间的调用链路，但是监控信息只输出到控制台始终不太方便查看。所以我们需要一个图形化的工具，这时候就轮到zipkin出场了
+        implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+//        通过该依赖把日志发送到zipkin 服务端
+        implementation 'org.springframework.cloud:spring-cloud-starter-zipkin'
+
+//        SpringCloudAlibaba 依赖BOM
+        implementation platform("org.springframework.cloud:spring-cloud-alibaba-dependencies:${springCloudAliVersion}")
+//        阿里熔断组件sentinel 代替 Hystrix 由于sentinel尚未包括在SpringCloud组件中,因此还是要带上版本号(由于添加了SpringCloudAlibaba的Bom依赖,因此不必添加版本号了)
+        implementation 'org.springframework.cloud:spring-cloud-starter-alibaba-sentinel'
+
+//         加入springboot开发包依赖
+//        implementation 'org.springframework.boot:spring-boot-devtools'
+//       健康检查依赖此包
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+//        implementation 'org.springframework.boot:spring-boot-starter-webflux'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+        if (name.endsWith("admin")) {
+//       SpringBoot Admin Server端依赖(依赖该模块的依赖,必须同时依赖spring-boot-starter-web依赖)
+            implementation group: 'de.codecentric', name: 'spring-boot-admin-starter-server', version: '2.1.6'
+        }
+//        SpringBoot Admin Client端依赖（依赖该依赖的模块,必须同时依赖spring-boot-starter-actuator依赖）
+        implementation group: 'de.codecentric', name: 'spring-boot-admin-starter-client', version: '2.1.6'
+
+//        MybatisPlus依赖
+        implementation 'com.baomidou:mybatis-plus-boot-starter:3.1.0'
+//        动态数据源切换依赖
+        implementation group: 'cn.kanyun', name: 'dynamic-datasource-spring-boot-starter', version: rootProject.dependentVersion.dynamicDataSourceVersion
+
+//        数据库连接: H2嵌入式数据库/Mysql数据库
+        runtimeOnly 'com.h2database:h2:1.4.199'
+        runtimeOnly 'mysql:mysql-connector-java:8.0.17'
+
+//        Lombok依赖
+        compileOnly group: 'org.projectlombok', name: 'lombok', version: rootProject.dependentVersion.lombokVersion
+        annotationProcessor group: 'org.projectlombok', name: 'lombok', version: rootProject.dependentVersion.lombokVersion
+
+        implementation group: 'com.google.guava', name: 'guava', version: '28.1-jre'
+        implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+        implementation group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+
+
+        implementation group: 'com.alibaba', name: 'druid-spring-boot-starter', version: '1.1.20'
+
+
+    }
+
+//    配置模块间的依赖
+    project(':spring-cloud-provider-user') {
+        dependencies {
+            implementation project(':spring-cloud-domain'), project(':spring-cloud-common')
+        }
+    }
+    project(':spring-cloud-provider-biz') {
+        dependencies {
+            implementation project(':spring-cloud-domain'), project(':spring-cloud-common')
+        }
+    }
+    project(':spring-cloud-provider-base') {
+        dependencies {
+            implementation project(':spring-cloud-domain'), project(':spring-cloud-common')
+        }
+    }
+
+
+}
+
+task cleanAll(type: org.gradle.api.tasks.Delete) {
+    description '清除所有子模块编译后的文件'
+    doLast {
+        fileTree(project.rootDir).each {
+            Project file ->
+                println file
+        }
+    }
+}
+
+
+
+

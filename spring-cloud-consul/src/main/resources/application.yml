@@ -1,0 +1,23 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: consul-service
+
+  cloud:
+#    consul配置
+    consul:
+      host: 127.0.0.1
+      port: 8500 # consul启动配置的端口
+      discovery: # 服务发现配置
+        enabled: true #启用服务发现
+        register: true #启用服务注册
+        deregister: true #服务停止时取消注册
+        prefer-ip-address: true #表示注册时使用IP而不是HostName
+        health-check-interval: 10s  #健康检查频率
+        health-check-critical-timeout: 30s
+        health-check-path: /health   #健康检查路径(只要是添加了SpringBoot的actuator依赖就有健康检查,默认：/actuator/health)
+        # 服务标识ID：(应用名称+服务器IP+端口)
+        instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
+

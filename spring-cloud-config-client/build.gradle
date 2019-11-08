@@ -1,0 +1,10 @@
+configurations {
+
+    implementation {
+        exclude group: 'org.projectlombok', module: '*'
+        exclude group: 'cn.kanyun', module: '*'
+    }
+
+}
+dependencies {
+}

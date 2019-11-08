@@ -1,0 +1,68 @@
+server:
+  port: 8060
+
+spring:
+  application:
+    name: config-bus-server
+
+  cloud:
+    consul:
+      host: 127.0.0.1
+      port: 8500
+
+      enabled: true
+#      开启config服务发现，既开启集群环境，此开关开启时，client必须使用服务名链接config server
+      discovery:
+        enabled: true #启用服务发现
+        register: true #启用服务注册
+        deregister: true #服务停止时取消注册
+        prefer-ip-address: true #表示注册时使用IP而不是HostName
+        health-check-interval: 10s  #健康检查频率
+        health-check-critical-timeout: 30s
+
+    #    配置项源设置,也就是配置中心的配置参数的源头配置
+    config:
+      server:
+        git:
+          # 注意这里的URI使用https的形式【避免使用用户名.密码】,特别需要注意的是,这个地址需要定位到配置文件所在目录
+          uri: https://github.com/chenwuwen/spring-cloud-demo
+#          用户名密码设置
+#          username:
+#          password:
+#           选择git分支,默认是master,svn的默认分支是trunk
+          default-label: master
+          #search-paths:属性表示搜索，如果你的仓库中有很多子文件，那么为了让config快速搜索到配置信息的存放目录，你就可以指定搜索文件名
+          # 使用应用名称作为搜索路径[使用应用名称作为搜索路径时需要用单引号括起来，否则yml文件无法正确解析。]
+          search-paths: '{application}'
+          # 对于使用git,svn做为后端配置，从远程库获取配置文件，需要存储到本地文件
+          basedir: C:\Users\HLWK-06\Desktop\visualvm_143
+          # 配置中心通过git从远程git库，有时本地的拷贝被污染，这时配置中心无法从远程库更新本地配置,设置force-pull=true，则强制从远程库中更新本地库
+          force-pull: true
+
+
+
+    stream:
+#      kafka配置
+      kafka:
+        binder:
+          auto-create-topics: true
+#          Kafka的服务端列表，默认localhost
+#          brokers: localhost:9092
+          brokers: 192.168.1.142:9092
+          replication-factor: 1
+
+    bus:
+      trace:
+#       开启跟踪事件消息（默认是false）
+        enabled: true
+#     自定义 topic 主题
+      destination: SpringCloudBus
+
+
+
+# 利用spring-boot-starter-actuator实现配置半自动刷新【bus配置方式】
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bus-refresh

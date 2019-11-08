@@ -1,0 +1,168 @@
+server:
+  port: 9020
+
+spring:
+
+  application:
+    name: base-provider
+  profiles:
+    active: dev
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    #h2内存模式
+    url: jdbc:h2:mem:baseDb
+    username: kanyun
+    password: kanyun
+    #设置数据库为h2数据库
+    platform: h2
+    #建表语句(可以不设置，默认会加载classPath下的schema.sql,如果名称不对,那么需要进行配置)
+    schema: classpath:schema.sql
+    #数据SQL(可以不设置，默认会加载classPath下的data.sql,如果名称不对,那么需要进行配置)
+    data: classpath:data.sql
+    name: defaultDataSource
+
+  jpa:
+    show-sql: true
+    hibernate:
+      # 配置自动建表：update:没有表新建，有表更新操作,控制台显示建表语句
+      ddl-auto: update
+
+
+  cloud:
+
+#    配置consul注册中心地址,用来将自身服务注册到consul上
+    consul:
+      host: 127.0.0.1
+      port: 8500
+
+#      consul服务发现配置
+      discovery:
+        enabled: true #启用服务发现
+        register: true #启用服务注册
+        deregister: true #服务停止时取消注册
+        prefer-ip-address: true #表示注册时使用IP而不是HostName
+        health-check-interval: 10s  #健康检查频率
+        health-check-critical-timeout: 30s
+
+
+#     consul配置中心配置(可在consul控制台修改key-value对来影响程序对应属性)
+      config:
+        enabled: true
+        fail-fast: true
+        format: YAML    # 表示consul上面文件的格式 有四种 YAML PROPERTIES KEY-VALUE FILES
+        data-key: data    #表示consul上面的KEY值(或者说文件的名字) 默认是data
+#        prefix:        #设置配置值的基本文件夹
+#        defaultContext:         #设置所有应用程序使用的文件夹名称
+#        profileSeparator:     #设置用于使用配置文件在属性源中分隔配置文件名称的分隔符的值
+
+
+#    sentinel配置(熔断/限流)
+    sentinel:
+      enabled: true
+      transport:
+#        被sentinel 控制台监听的服务的端口(server.port + 1)
+#        即sentinel 应用的 Endpoint端口 [与SpringCloud/SpringBoot没有关系,但对于SpringCloud的一个应用而言,需要配置一个对应的端口]
+        port: 9021
+#        Sentinel 控制台地址（Sentinel控制台需要单独安装,控制台登录需要密码(默认用户名和密码都是 sentinel),下载地址:https://github.com/alibaba/Sentinel/releases）
+#        启动命令行：java -Dserver.port=8080  -jar sentinel-dashboard-1.6.3.jar
+#        上报服务器 Dashboard 也即当使用Sentinel控制台时,其本身就是服务端了
+        dashboard: localhost:8080
+#      取消Sentinel控制台懒加载
+      eager: true
+
+    stream:
+      kafka:
+#        Binder 是 Spring Cloud Stream 的一个抽象概念，是应用与消息中间件之间的粘合剂。目前 Spring Cloud Stream 实现了 Kafka 和 Rabbit MQ 的binder
+        binder:
+          auto-create-topics: true
+#          brokers: localhost:9092
+          brokers: 192.168.1.142:9092
+          replication-factor: 1
+
+#      bindings 是我们通过配置把应用和spring cloud stream 的 binder 绑定在一起，之后我们只需要修改 binding 的配置来达到动态修改topic、exchange、type等一系列信息而不需要修改一行代码
+      bindings:
+#        自定义通道名
+        datasourceOutPut:
+#          消息发往的目的地(也就是输入通道对应的主题名)
+          destination: datasourceInPut
+#          消息发送的格式，接收端不用指定格式，但是发送端要
+          content-type: text/plain
+        datasourceInPut:
+#          消息发往的目的地(也就是输入通道对应的主题名)
+          destination: datasourceInPut
+#          消息发送的格式，接收端不用指定格式，但是发送端要
+          content-type: text/plain
+
+
+#  springboot-admin 客户端配置
+#  boot:
+#    admin:
+#      client:
+##        是否启用springboot-admin 客户端
+#        enabled: true
+##        配置springboot-admin 服务端地址
+#        url: boot-admin
+#        instance:
+#          service-url: http://localhost:9020
+
+
+
+feign:
+  compression:
+    request:
+      min-request-size: 2048
+      mime-types:
+        - "text/xml"
+        - "application/xml"
+        - "application/json"
+      enabled: true
+  okhttp:
+#    是否开启okhttp (使用httpclient/okhttp都是为了优化feign,因为feign默认是http连接的,且没有连接池,因此需要替换实现)
+    enabled: true
+  httpclient:
+#    是否开启httpclient
+    enabled: false
+
+
+jdbc:
+  datasource:
+    src:
+      driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/base
+      username: root
+      password: root
+
+kanyun:
+  datasource:
+    dynamic:
+      enabled: true
+#      primary: master
+#      datasource-collection:
+#        master:
+#          driver-class-name: org.h2.Driver
+#          url: jdbc:h2:mem:baseDb
+#          username: kanyun
+#          password: kanyun
+#          schema: schema.sql
+#          #数据SQL(可以不设置，默认会加载classPath下的data.sql,如果名称不对,那么需要进行配置)
+#          data: data.sql
+
+
+
+#Spring Boot2.x中(也即：spring-boot-starter-actuator)，默认只开放了info、health两个端点，开放其他端点需要配置
+management:
+  endpoints:
+    web:
+      exposure:
+#        开启所有端点:
+        include: "*"
+#    启用所有端口
+    enabled-by-default: true
+  endpoint:
+    shutdown:
+#      打开 shutdown 端点，通过 POST 访问该端点可以关闭应用
+      enabled: true
+    health:
+#      显示详细的 health 信息
+      show-details: always

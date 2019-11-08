@@ -1,0 +1,79 @@
+spring:
+  cloud:
+
+    consul:
+      host: 127.0.0.1 #配置consul地址
+      port: 8500 #配置consul端口
+
+#     consul注册中心配置 开启config服务发现，既开启集群环境，此开关开启时，client必须使用服务名链接config server
+      discovery:
+        enabled: true #启用服务发现
+        register: true #启用服务注册
+        deregister: true #服务停止时取消注册
+        prefer-ip-address: true #表示注册时使用IP而不是HostName
+        health-check-interval: 10s  #健康检查频率
+        health-check-critical-timeout: 30s
+
+#      consul配置中心配置
+      config:
+        enable: true
+        prefix: config
+        enabled: true  # 启动consul配置中心
+        format: YAML  #consul上面文件格式 YAML FILES PROPERTIES 默认 KEY-VALUE
+        data-key: user #consul上面的Key值 默认是data
+
+#    配置中心服务器的地址
+    config:
+      enabled: true
+#      如果需要使用服务名来访问配置中心,需要如下discovery的配置.同时Consul注册中心配置也应该移入bootstrap.yml中
+#      此地址默认为http://localhost:8888 如果使用服务名来访问配置中心,则此配置需要注释掉,保持默认,否则会以此uri为准
+#      uri: http://config-bus-server
+#      true: 如果访问配置中心失败，则停止启动服务,这个不配置会报错： No bean named 'configServerRetryInterceptor' available
+      fail-fast: true
+#       要读取配置文件读取的值.此值,+下面的profile配置的值,共同组成了,配置仓库中配置文件的名字
+      name: spring-cloud-config-client
+      profile: dev
+
+#      访问配置中心，用户安全认证
+#      username: kanyun
+#      password: kanyun
+
+#      配置重试，默认是重试6次，最初是延迟1s再次重试，如果再失败，则延迟1.1*1s、1.1*1.1*1s、… 。可以使用这个配置
+      retry:
+        initial-interval: 2000
+        # 最多重试次数
+        max-attempts: 6
+        # 最大重试间隔
+        max-interval: 4000
+        # 每次重试时间是之前的倍数
+        multiplier: 1.2
+      discovery:
+#         启动服务发现的功能，开启了才能调用其它服务
+        enabled: true
+#         此Id是,注册在注册中心的,配置中心服务的InstanceId,当配置了此Service-ID 后,就不要再配置spring.cloud.config.uri了,否则会以那个为准
+        service-id: config-bus-server
+
+    stream:
+#      kafka配置
+      kafka:
+        binder:
+          auto-create-topics: true
+#          Kafka的服务端列表，默认localhost
+#          brokers: localhost:9092
+          brokers: 192.168.1.142:9092
+          replication-factor: 1
+
+    bus:
+      # 是否启用bus(默认为true)
+      enabled: true
+      # Bus 使用的队列或 Topic，Kafka 中的 topic，Rabbitmq 中的 queue 需要与ConfigServer保持一致
+      destination: SpringCloudBus
+      trace:
+        # 是否启用 Bus 事件跟踪，可以通过 /trace 页面查看
+        enabled: true
+      env:
+#         是否开启 env 事件，开启时支持直接动态配置相应环境变量，如 /bus/env?arg1=value1&arg2=value2
+        enabled: true
+      refresh:
+#        是否发送 refresh 事件，开启时支持基于 config 文件变更的动态配置
+        enabled: true

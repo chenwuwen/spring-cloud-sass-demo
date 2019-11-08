@@ -1,0 +1,17 @@
+configurations {
+
+    implementation {
+        exclude group: 'org.projectlombok', module: '*'
+        exclude group: 'cn.kanyun', module: '*'
+//        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-stream-kafka' 
+    }
+
+}
+dependencies {
+//    spring-cloud-bus是spring-cloud-config-server的补充,避免了当修改配置中心的配置时,向每个微服务都发送refresh请求,使用了cloud-bus只需发送一次即可,这是一个消息队列的发布订阅模型
+    implementation 'org.springframework.cloud:spring-cloud-bus'
+//    SpringCloud Config server端
+    implementation 'org.springframework.cloud:spring-cloud-config-server'
+//    implementation 'org.springframework.cloud:spring-cloud-starter-bus-kafka'
+    implementation 'javax.servlet:javax.servlet-api:4.0.1'
+}
