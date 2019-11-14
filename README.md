@@ -26,6 +26,6 @@ SpringCloud Version Greenwich.SR3 具体组件如下:
 
 [kafka](http://kafka.apache.org/downloads)
 
-[kafka-manager](https://pan.baidu.com/s/1jIE3YL4?pwd=)   [kafka-eagle(推荐)](http://download.kafka-eagle.org/)
+[kafka-manager](https://pan.baidu.com/s/1jIE3YL4?pwd=)    /   [kafka-eagle(推荐)](http://download.kafka-eagle.org/)
 
 [zipkin-server](https://repo1.maven.org/maven2/io/zipkin/java/zipkin-server/)
