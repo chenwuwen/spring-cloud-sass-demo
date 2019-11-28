@@ -3,6 +3,7 @@ package cn.kanyun.consul;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  * 服务发现组件
@@ -11,6 +12,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  * @EnableDiscoveryClient 注解表示支持服务发现
  * @author Kanyun
  */
+@EnableFeignClients
 @EnableDiscoveryClient
 @SpringBootApplication
 public class SpringCloudConsulApplication {
