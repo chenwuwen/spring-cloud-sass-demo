@@ -6,7 +6,7 @@ ext{
             springbootVersion : '2.1.8.RELEASE',
             dependencyManagementVersion : '1.0.8.RELEASE',
             lombokVersion : '1.18.10',
-            dynamicDataSourceVersion : '1.0-SNAPSHOT'
+            dynamicDataSourceVersion : '1.0.0'
 
     ]
 }

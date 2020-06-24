@@ -1,0 +1,74 @@
+version: 'v2'
+
+services:
+
+#  配置中心服务
+  config-bus-server:
+    restart: on-failure
+    image: config-bus-server
+    ports:
+    - "8060:8060"
+    environment:
+      SERVER_PORT: "8060"
+    networks:
+      - default
+
+#  网关服务
+  gateway:
+    restart: on-failure
+    image: gateway
+    ports:
+      - "8090:8090"
+    environment:
+      SERVER_PORT: "8090"
+    networks:
+      - default
+
+#  SpringBoot  Admin面板
+  admin:
+    restart: on-failure
+    image: admin
+    ports:
+      - "8500:8500"
+    environment:
+      SERVER_PORT: "8500"
+    networks:
+      - default
+
+#  业务基础服务
+  provider-base:
+    restart: on-failure
+    image: provider-base
+    ports:
+      - "9020:9020"
+    environment:
+      SERVER_PORT: "9020"
+    networks:
+      - default
+
+#  业务服务:BIZ
+  provider-biz:
+    restart: on-failure
+    image: provider-biz
+    ports:
+      - "9010:9010"
+    environment:
+      SERVER_PORT: "9010"
+    networks:
+      - default
+
+#  业务服务：USER
+  provider-user:
+    restart: on-failure
+    image: provider-user
+    ports:
+      - "9000:9000"
+    environment:
+      SERVER_PORT: "9000"
+    networks:
+      - default
+
+
+networks:
+  default:
+    driver: bridge

@@ -2,6 +2,7 @@
 plugins {
     id "idea"
     id "org.springframework.boot" version "2.1.8.RELEASE" apply false
+
 }
 
 
@@ -38,11 +39,14 @@ allprojects {
     }
 
 //    在allprojects块中不能使用 plugins{} 块
+//    如果添加了 application 插件的话，默认 gradle-docker 插件会添加一个 distDocker 的 gradle task，用来构建一个 包含所有程序文件 的 docker 镜像
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
     apply plugin: 'idea'
+    apply plugin: 'docker'
 
+    apply plugin: 'application'
 
 //    项目依赖仓库
     repositories {
@@ -142,7 +146,7 @@ subprojects {
 //        MybatisPlus依赖
         implementation 'com.baomidou:mybatis-plus-boot-starter:3.1.0'
 //        动态数据源切换依赖
-        implementation group: 'cn.kanyun', name: 'dynamic-datasource-spring-boot-starter', version: rootProject.dependentVersion.dynamicDataSourceVersion
+        implementation group: 'io.github.chenwuwen', name: 'dynamic-datasource-spring-boot-starter', version: rootProject.dependentVersion.dynamicDataSourceVersion
 
 //        数据库连接: H2嵌入式数据库/Mysql数据库
         runtimeOnly 'com.h2database:h2:1.4.199'

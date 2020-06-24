@@ -71,7 +71,7 @@ spring:
         binder:
           auto-create-topics: true
 #          brokers: localhost:9092
-          brokers: 192.168.1.142:9092
+          brokers: 192.168.1.144:9092
           replication-factor: 1
 #        bindings 是我们通过配置把应用和spring cloud stream 的 binder 绑定在一起，之后我们只需要修改 binding 的配置来达到动态修改topic、exchange、type等一系列信息而不需要修改一行代码
       bindings:
